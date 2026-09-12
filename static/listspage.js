@@ -7,7 +7,7 @@ const listsContainer = document.getElementById("listsContainer");
 const newListForm = document.getElementById("newListForm");
 const newListInput = document.getElementById("newListInput");
 
-fetch("books.json")
+fetch("/static/books.json")
     .then((response) => response.json())
     .then((data) => {
         allBooks = data;

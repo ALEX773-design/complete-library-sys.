@@ -1,0 +1,52 @@
+.login-page {
+    max-width: 360px;
+    margin: 120px auto;
+    text-align: center;
+}
+.login-page h1 {
+    font-family: Georgia, serif;
+    color: var(--peach);
+    margin-bottom: 40px;
+}
+.login-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.login-page input {
+    padding: 12px 14px;
+    border: none;
+    border-radius: 3px;
+    background: var(--ivory);
+    color: var(--plum);
+    font-family: Georgia, serif;
+    font-size: 15px;
+}
+.login-page button {
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    background: var(--peach);
+    color: var(--plum);
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+}
+.login-page button:hover {
+    background: var(--ivory);
+}
+.auth-error {
+    color: #e08585;
+    font-size: 13px;
+    min-height: 18px;
+    margin: 0;
+}
+.auth-toggle {
+    margin-top: 20px;
+    color: var(--ivory);
+    font-size: 14px;
+}
+.auth-toggle a {
+    color: var(--peach);
+    cursor: pointer;
+}

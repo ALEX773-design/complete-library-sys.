@@ -1,6 +1,6 @@
 const recordsContainer = document.getElementById("recordsContainer");
 
-fetch("books.json")
+fetch("/static/books.json")
     .then((response) => response.json())
     .then((allBooks) => {
         const records = getMockReadingHistory();

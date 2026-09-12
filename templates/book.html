@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favorites</title>
-    <script src="nightmode.js"></script>
-    <link rel="stylesheet" href="theme.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="lists.css">
+    <title>National Library — Book</title>
+    <script src="{{ url_for('static', filename='nightmode.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='book.css') }}">
 </head>
 <body>
 
@@ -24,7 +24,7 @@
 
         <a href="homepage.html" class="logo">
             National Library
-            <img class="logo-decoration" src="images/logo-decoration.png" alt="">
+            <img class="logo-decoration" src="{{ url_for('static', filename='images/logo-decoration.png') }}" alt="">
         </a>
 
         <div class="account-box" id="accountBox">
@@ -36,19 +36,17 @@
                 <a href="reading-history.html">Reading History</a>
                 <a href="favorites.html">Favorites</a>
                 <a href="ecard.html">Library E-card</a>
+                <a href="#" id="logoutLink">Log Out</a>
             </div>
         </div>
     </header>
 
-    <main>
-        <section class="lists-page">
-            <h1>Favorites</h1>
-            <div id="favoritesContainer"></div>
-        </section>
+    <main class="book-detail">
+        <div id="bookDetailContainer"></div>
     </main>
 
-    <script src="nav.js"></script>
-    <script src="favorites.js"></script>
-    <script src="favoritespage.js"></script>
+    <script src="{{ url_for('static', filename='nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='favorites.js') }}"></script>
+    <script src="{{ url_for('static', filename='book.js') }}"></script>
 </body>
 </html>

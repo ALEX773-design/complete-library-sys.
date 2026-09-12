@@ -10,7 +10,7 @@
     "year": 1949,
     "popularity": 98,
     "addedDate": "2026-08-15",
-    "cover": "images/book1.jpg"
+    "cover": "/static/images/book1.jpg"
   },
   {
     "id": "b02",
@@ -23,7 +23,7 @@
     "year": 1939,
     "popularity": 92,
     "addedDate": "2026-08-16",
-    "cover": "images/book2.jpg"
+    "cover": "/static/images/book2.jpg"
   },
   {
     "id": "b03",
@@ -36,7 +36,7 @@
     "year": 1609,
     "popularity": 95,
     "addedDate": "2026-08-14",
-    "cover": "images/book3.jpg"
+    "cover": "/static/images/book3.jpg"
   },
   {
     "id": "b04",
@@ -49,7 +49,7 @@
     "year": 1960,
     "popularity": 98,
     "addedDate": "2026-08-17",
-    "cover": "images/book4.jpg"
+    "cover": "/static/images/book4.jpg"
   },
   {
     "id": "b05",
@@ -63,7 +63,7 @@
     "year": 1847,
     "popularity": 94,
     "addedDate": "2026-08-13",
-    "cover": "images/book5.jpg"
+    "cover": "/static/images/book5.jpg"
   },
   {
     "id": "b06",
@@ -76,7 +76,7 @@
     "year": 1932,
     "popularity": 96,
     "addedDate": "2026-08-18",
-    "cover": "images/book6.jpg"
+    "cover": "/static/images/book6.jpg"
   },
   {
     "id": "b07",
@@ -90,7 +90,7 @@
     "year": 1991,
     "popularity": 89,
     "addedDate": "2026-08-19",
-    "cover": "images/book7.jpg"
+    "cover": "/static/images/book7.jpg"
   },
   {
     "id": "b08",
@@ -103,7 +103,7 @@
     "year": 1974,
     "popularity": 90,
     "addedDate": "2026-08-11",
-    "cover": "images/book8.jpg"
+    "cover": "/static/images/book8.jpg"
   },
   {
     "id": "b09",
@@ -116,7 +116,7 @@
     "year": 1952,
     "popularity": 93,
     "addedDate": "2026-08-10",
-    "cover": "images/book9.jpg"
+    "cover": "/static/images/book9.jpg"
   },
   {
     "id": "b10",
@@ -128,7 +128,7 @@
     "year": 1472,
     "popularity": 85,
     "addedDate": "2026-08-12",
-    "cover": "images/book10.jpg"
+    "cover": "/static/images/book10.jpg"
   },
   {
     "id": "b11",
@@ -142,7 +142,7 @@
     "year": 1597,
     "popularity": 97,
     "addedDate": "2026-08-09",
-    "cover": "images/book11.jpg"
+    "cover": "/static/images/book11.jpg"
   },
   {
     "id": "b12",
@@ -155,7 +155,7 @@
     "year": 1898,
     "popularity": 94,
     "addedDate": "2026-08-08",
-    "cover": "images/book12.jpg"
+    "cover": "/static/images/book12.jpg"
   },
   {
     "id": "b13",
@@ -168,7 +168,7 @@
     "year": 1980,
     "popularity": 85,
     "addedDate": "2026-08-07",
-    "cover": "images/book13.jpg"
+    "cover": "/static/images/book13.jpg"
   },
   {
     "id": "b14",
@@ -182,7 +182,7 @@
     "year": 1892,
     "popularity": 96,
     "addedDate": "2026-08-06",
-    "cover": "images/book14.jpg"
+    "cover": "/static/images/book14.jpg"
   },
   {
     "id": "b15",
@@ -194,6 +194,6 @@
     "year": 1897,
     "popularity": 75,
     "addedDate": "2026-08-18",
-    "cover": "images/book15.jpg"
+    "cover": "/static/images/book15.jpg"
   }
 ]

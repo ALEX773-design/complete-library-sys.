@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search</title>
-    <script src="nightmode.js"></script>
-    <link rel="stylesheet" href="theme.css">
-    <link rel="stylesheet" href="nav.css">
-    <link rel="stylesheet" href="search.css">
-    <link rel="stylesheet" href="lists.css">
+    <script src="{{ url_for('static', filename='nightmode.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='search.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='lists.css') }}">
 </head>
 <body>
 
@@ -25,7 +25,7 @@
 
         <a href="homepage.html" class="logo">
             National Library
-            <img class="logo-decoration" src="images/logo-decoration.png" alt="">
+            <img class="logo-decoration" src="{{ url_for('static', filename='images/logo-decoration.png') }}" alt="">
         </a>
 
         <div class="account-box" id="accountBox">
@@ -93,9 +93,9 @@
         </section>
     </main>
 
-    <script src="nav.js"></script>
-    <script src="lists.js"></script>
-    <script src="favorites.js"></script>
-    <script src="searchscript.js"></script>
+    <script src="{{ url_for('static', filename='nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='lists.js') }}"></script>
+    <script src="{{ url_for('static', filename='favorites.js') }}"></script>
+    <script src="{{ url_for('static', filename='searchscript.js') }}"></script>
 </body>
 </html>

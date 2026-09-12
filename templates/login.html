@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National Library — Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+</head>
+<body>
+    <main class="login-page">
+        <h1>National Library</h1>
+
+        <form id="authForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <p id="authError" class="auth-error"></p>
+            <button type="submit" id="authSubmit">Log In</button>
+        </form>
+
+        <p class="auth-toggle">
+            <span id="toggleText">Don't have an account?</span>
+            <a href="#" id="toggleModeLink">Sign up</a>
+        </p>
+    </main>
+
+    <script src="{{ url_for('static', filename='login.js') }}"></script>
+</body>
+</html>

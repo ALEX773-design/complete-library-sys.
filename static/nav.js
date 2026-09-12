@@ -33,3 +33,8 @@ document.addEventListener("click", (e) => {
     if (!menuBox.contains(e.target)) closeMenu();
     if (!accountBox.contains(e.target)) closeAccount();
 });
+document.getElementById("logoutLink")?.addEventListener("click", async (e) => {
+    e.preventDefault();
+    await fetch("/api/logout", { method: "POST" });
+    window.location.href = "/login.html";
+});
