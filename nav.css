@@ -1,0 +1,154 @@
+
+.navbar {
+    position: relative;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border-bottom: 1px solid var(--mauve);
+}
+
+.logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ivory);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.logo span {
+    position: relative;
+    z-index: 2;
+}
+
+.logo-decoration {
+    position: absolute;
+    width: 150px;
+    height: auto;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.menu-button {
+    width: 60px;
+    height: 60px;
+    background: none;
+    border: none;
+    color: var(--peach);
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.menu-box {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--plum);
+    border-radius: 4px;
+    z-index: 1000;
+    overflow: hidden;
+    transition: width 0.4s ease, height 0.4s ease, background-color 0.4s ease;
+}
+
+.menu-box.open {
+    width: 280px;
+    height: 500px;
+    background-color: var(--plum-dark);
+}
+
+.menu-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 35px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.menu-box.open .menu-content {
+    opacity: 1;
+}
+
+.menu-content a {
+    width: 80%;
+    padding: 18px 0;
+    color: var(--peach);
+    text-decoration: none;
+    font-family: Georgia, serif;
+    font-size: 22px;
+    text-align: center;
+    border-bottom: 1px solid var(--mauve);
+}
+
+.menu-content a:hover {
+    background-color: var(--mauve);
+    color: var(--ivory);
+}
+
+.account-button {
+    width: 50px;
+    height: 50px;
+    background: none;
+    border: none;
+    color: var(--peach);
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.account-box {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--plum);
+    border-radius: 4px;
+    z-index: 1000;
+    overflow: hidden;
+    transition: width 0.4s ease, height 0.4s ease, background-color 0.4s ease;
+}
+
+.account-box.open {
+    width: 240px;
+    height: 500px;
+    background-color: #000000;
+}
+
+.account-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 25px;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.account-box.open .account-content {
+    opacity: 1;
+}
+
+.account-content a {
+    width: 80%;
+    padding: 14px 0;
+    color: var(--peach);
+    text-decoration: none;
+    font-family: Georgia, serif;
+    font-size: 17px;
+    text-align: center;
+    border-bottom: 1px solid var(--mauve);
+}
+
+.account-content a:hover {
+    background-color: var(--mauve);
+    color: var(--ivory);
+}

@@ -1,0 +1,199 @@
+[
+  {
+    "id": "b01",
+    "title": "1984",
+    "author": "George Orwell",
+    "genres": [
+      "dystopian",
+      "science-fiction"
+    ],
+    "year": 1949,
+    "popularity": 98,
+    "addedDate": "2026-08-15",
+    "cover": "images/book1.jpg"
+  },
+  {
+    "id": "b02",
+    "title": "And Then There Were None",
+    "author": "Agatha Christie",
+    "genres": [
+      "mystery",
+      "thriller"
+    ],
+    "year": 1939,
+    "popularity": 92,
+    "addedDate": "2026-08-16",
+    "cover": "images/book2.jpg"
+  },
+  {
+    "id": "b03",
+    "title": "Hamlet",
+    "author": "William Shakespeare",
+    "genres": [
+      "tragedy",
+      "drama"
+    ],
+    "year": 1609,
+    "popularity": 95,
+    "addedDate": "2026-08-14",
+    "cover": "images/book3.jpg"
+  },
+  {
+    "id": "b04",
+    "title": "To Kill a Mockingbird",
+    "author": "Harper Lee",
+    "genres": [
+      "drama",
+      "historical-fiction"
+    ],
+    "year": 1960,
+    "popularity": 98,
+    "addedDate": "2026-08-17",
+    "cover": "images/book4.jpg"
+  },
+  {
+    "id": "b05",
+    "title": "Jane Eyre",
+    "author": "Charlotte Bront\u00eb",
+    "genres": [
+      "romance",
+      "gothic",
+      "drama"
+    ],
+    "year": 1847,
+    "popularity": 94,
+    "addedDate": "2026-08-13",
+    "cover": "images/book5.jpg"
+  },
+  {
+    "id": "b06",
+    "title": "Brave New World",
+    "author": "Aldous Huxley",
+    "genres": [
+      "dystopian",
+      "science-fiction"
+    ],
+    "year": 1932,
+    "popularity": 96,
+    "addedDate": "2026-08-18",
+    "cover": "images/book6.jpg"
+  },
+  {
+    "id": "b07",
+    "title": "American Psycho",
+    "author": "Bret Easton Ellis",
+    "genres": [
+      "psychological",
+      "horror",
+      "satire"
+    ],
+    "year": 1991,
+    "popularity": 89,
+    "addedDate": "2026-08-19",
+    "cover": "images/book7.jpg"
+  },
+  {
+    "id": "b08",
+    "title": "Jaws",
+    "author": "Peter Benchley",
+    "genres": [
+      "thriller",
+      "horror"
+    ],
+    "year": 1974,
+    "popularity": 90,
+    "addedDate": "2026-08-11",
+    "cover": "images/book8.jpg"
+  },
+  {
+    "id": "b09",
+    "title": "The Old Man and the Sea",
+    "author": "Ernest Hemingway",
+    "genres": [
+      "literary-fiction",
+      "drama"
+    ],
+    "year": 1952,
+    "popularity": 93,
+    "addedDate": "2026-08-10",
+    "cover": "images/book9.jpg"
+  },
+  {
+    "id": "b10",
+    "title": "The Divine Comedy",
+    "author": "Dante Alighieri",
+    "genres": [
+      "epic"
+    ],
+    "year": 1472,
+    "popularity": 85,
+    "addedDate": "2026-08-12",
+    "cover": "images/book10.jpg"
+  },
+  {
+    "id": "b11",
+    "title": "Romeo and Juliet",
+    "author": "William Shakespeare",
+    "genres": [
+      "tragedy",
+      "romance",
+      "drama"
+    ],
+    "year": 1597,
+    "popularity": 97,
+    "addedDate": "2026-08-09",
+    "cover": "images/book11.jpg"
+  },
+  {
+    "id": "b12",
+    "title": "The War of the Worlds",
+    "author": "H. G. Wells",
+    "genres": [
+      "science-fiction",
+      "alien-invasion"
+    ],
+    "year": 1898,
+    "popularity": 94,
+    "addedDate": "2026-08-08",
+    "cover": "images/book12.jpg"
+  },
+  {
+    "id": "b13",
+    "title": "The Book of the New Sun",
+    "author": "Gene Wolfe",
+    "genres": [
+      "science-fiction",
+      "fantasy"
+    ],
+    "year": 1980,
+    "popularity": 85,
+    "addedDate": "2026-08-07",
+    "cover": "images/book13.jpg"
+  },
+  {
+    "id": "b14",
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "genres": [
+      "mystery",
+      "detective",
+      "crime"
+    ],
+    "year": 1892,
+    "popularity": 96,
+    "addedDate": "2026-08-06",
+    "cover": "images/book14.jpg"
+  },
+  {
+    "id": "b15",
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "genres": [
+      "horror"
+    ],
+    "year": 1897,
+    "popularity": 75,
+    "addedDate": "2026-08-18",
+    "cover": "images/book15.jpg"
+  }
+]

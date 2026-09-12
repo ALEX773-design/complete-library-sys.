@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse</title>
+    <script src="nightmode.js"></script>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="browse.css">
+    <link rel="stylesheet" href="lists.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="menu-box" id="menuBox">
+            <button class="menu-button" id="menuButton">☰</button>
+            <div class="menu-content">
+                <a href="search.html">Search</a>
+                <a href="browse.html">Browse All</a>
+                <a href="lists.html">Lists</a>
+                <a href="account.html">Account</a>
+            </div>
+        </div>
+
+        <a href="homepage.html" class="logo">
+            National Library
+            <img class="logo-decoration" src="images/logo-decoration.png" alt="">
+        </a>
+
+        <div class="account-box" id="accountBox">
+            <button class="account-button" id="accountButton">◉</button>
+            <div class="account-content">
+                <a href="profile.html">Profile</a>
+                <a href="borrowed-books.html">Borrowed Books</a>
+                <a href="borrowing-history.html">Borrowing History</a>
+                <a href="reading-history.html">Reading History</a>
+                <a href="favorites.html">Favorites</a>
+                <a href="ecard.html">Library E-card</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="browse">
+            <h1>Browse</h1>
+
+            <div class="browse-tabs">
+                <button class="browse-tab active" data-category="all">All</button>
+                <button class="browse-tab" data-category="recent">Recent</button>
+                <button class="browse-tab" data-category="popular">Popular</button>
+            </div>
+
+            <div class="browse-books" id="browseBooks"></div>
+        </section>
+    </main>
+
+    <script src="nav.js"></script>
+    <script src="lists.js"></script>
+    <script src="favorites.js"></script>
+    <script src="browse.js"></script>
+</body>
+</html>

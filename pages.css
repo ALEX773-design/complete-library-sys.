@@ -1,0 +1,326 @@
+/* Shared layout for Account, Profile, Users,
+   Dev, All Profiles,mock-data book-history pages. */
+
+.page-content {
+    width: min(900px, 90%);
+    margin: 70px auto;
+}
+
+.page-content h1 {
+    text-align: center;
+    color: var(--peach);
+    font-family: Georgia, serif;
+    font-size: 36px;
+    font-weight: normal;
+    margin-bottom: 40px;
+}
+
+/* Banners */
+
+.mock-banner,
+.admin-banner {
+    text-align: center;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: Georgia, serif;
+    font-size: 13px;
+    margin-bottom: 30px;
+}
+
+.mock-banner {
+    background: rgba(246, 219, 192, 0.15);
+    color: var(--peach);
+    border: 1px dashed var(--mauve);
+}
+
+.admin-banner {
+    background: repeating-linear-gradient(
+        45deg, #ffcc00, #ffcc00 10px, #1a1a1a 10px, #1a1a1a 20px
+    );
+    color: #1a1a1a;
+    font-weight: bold;
+    padding: 8px;
+}
+
+/* Simple link list (Account page, Profile menu style) */
+
+.page-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.page-links a,
+.page-links .page-link-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    background: var(--plum-dark);
+    color: var(--peach);
+    text-decoration: none;
+    font-family: Georgia, serif;
+    font-size: 17px;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.page-links a:hover {
+    background: var(--mauve);
+    color: var(--ivory);
+}
+
+/* night mode */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-track {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--plum);
+    border: 1px solid var(--mauve);
+    border-radius: 26px;
+    transition: 0.2s;
+}
+
+.switch-track::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: var(--ivory);
+    border-radius: 50%;
+    transition: 0.2s;
+}
+
+.switch input:checked + .switch-track {
+    background: var(--mauve);
+}
+
+.switch input:checked + .switch-track::before {
+    transform: translateX(20px);
+    background: var(--peach);
+}
+
+/* Profile card */
+
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: var(--plum-dark);
+    border-radius: 6px;
+    margin-bottom: 40px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--mauve);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+}
+
+.profile-fields {
+    flex: 1;
+}
+
+.profile-field {
+    margin: 6px 0;
+    color: var(--ivory);
+    font-family: Georgia, serif;
+    font-size: 15px;
+}
+
+.profile-field strong {
+    color: var(--peach);
+    margin-right: 8px;
+}
+
+/* Simple record table, used for Borrowing/Reading history */
+
+.record-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.record-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 18px;
+    background: var(--plum-dark);
+    border-radius: 4px;
+}
+
+.record-row img {
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.record-details {
+    flex: 1;
+}
+
+.record-details h3 {
+    margin: 0 0 4px;
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: normal;
+    color: var(--peach);
+}
+
+.record-details p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ivory);
+    opacity: 0.75;
+}
+
+.record-status {
+    padding: 4px 10px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.record-status.active {
+    background: var(--mauve);
+    color: var(--ivory);
+}
+
+.record-status.returned {
+    background: transparent;
+    border: 1px solid var(--mauve);
+    color: var(--peach);
+    opacity: 0.8;
+}
+
+/* User directory list */
+
+.user-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 18px;
+    background: var(--plum-dark);
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--mauve);
+    flex-shrink: 0;
+}
+
+.user-name {
+    color: var(--peach);
+    font-family: Georgia, serif;
+}
+
+/* Users/admin tabs */
+
+.admin-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 40px;
+}
+
+.admin-tab {
+    padding: 12px 30px;
+    background: transparent;
+    border: 1px solid var(--mauve);
+    color: var(--peach);
+    font-family: Georgia, serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.admin-tab:hover {
+    background: var(--mauve);
+}
+
+.admin-tab.active {
+    background: var(--mauve);
+    color: var(--ivory);
+}
+
+.admin-panel-section {
+    display: none;
+}
+
+.admin-panel-section.active {
+    display: block;
+}
+
+/* Dev panel */
+
+.dev-panel {
+    border: 2px solid #ffcc00;
+    border-radius: 6px;
+    padding: 20px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.dev-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--mauve);
+    color: var(--ivory);
+    font-family: Georgia, serif;
+    font-size: 14px;
+}
+
+.dev-row:last-child {
+    border-bottom: none;
+}
+
+.dev-row.danger {
+    color: #ff8080;
+}
+
+.dev-btn {
+    padding: 6px 14px;
+    background: var(--plum);
+    border: 1px solid var(--mauve);
+    border-radius: 3px;
+    color: var(--ivory);
+    font-family: Georgia, serif;
+    font-size: 13px;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

@@ -1,0 +1,29 @@
+:root {
+    --plum: #502D55;
+    --plum-dark: #3B1F3F;
+    --mauve: #935073;
+    --peach: #F6DBC0;
+    --ivory: #F8F4E9;
+}
+
+:root.night-mode {
+    --plum: #201025;
+    --plum-dark: #150a19;
+    --mauve: #4a2b4f;
+    --peach: #c9a876;
+    --ivory: #d9d0c8;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background: radial-gradient(ellipse at top, var(--mauve), var(--plum) 65%);
+    background-attachment: fixed;
+
+    color: var(--ivory);
+    font-family: Georgia, serif;
+
+    overflow-x: hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+}

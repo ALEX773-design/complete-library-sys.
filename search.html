@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <script src="nightmode.js"></script>
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="search.css">
+    <link rel="stylesheet" href="lists.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="menu-box" id="menuBox">
+            <button class="menu-button" id="menuButton">☰</button>
+            <div class="menu-content">
+                <a href="search.html">Search</a>
+                <a href="browse.html">Browse All</a>
+                <a href="lists.html">Lists</a>
+                <a href="account.html">Account</a>
+            </div>
+        </div>
+
+        <a href="homepage.html" class="logo">
+            National Library
+            <img class="logo-decoration" src="images/logo-decoration.png" alt="">
+        </a>
+
+        <div class="account-box" id="accountBox">
+            <button class="account-button" id="accountButton">◉</button>
+            <div class="account-content">
+                <a href="profile.html">Profile</a>
+                <a href="borrowed-books.html">Borrowed Books</a>
+                <a href="borrowing-history.html">Borrowing History</a>
+                <a href="reading-history.html">Reading History</a>
+                <a href="favorites.html">Favorites</a>
+                <a href="ecard.html">Library E-card</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="search">
+            <center><h3>Search</h3></center>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search for a book...">
+
+                <label for="sortSelect">Sort by</label>
+                <select id="sortSelect">
+                    <option value="descending">Descending</option>
+                    <option value="ascending">Ascending</option>
+                    <option value="popular">Most Popular</option>
+                    <option value="newest">Newest</option>
+                </select>
+
+                <label for="genreSelect">Genre</label>
+                <select id="genreSelect">
+                    <option value="all">All Genres</option>
+                    <option value="science-fiction">Science-fiction</option>
+                    <option value="dystopian">Dystopian</option>
+                    <option value="fantasy">Fantasy</option>
+                    <option value="mystery">Mystery</option>
+                    <option value="romance">Romance</option>
+                    <option value="history">History</option>
+                    <option value="science">Science</option>
+                    <option value="thriller">Thriller</option>
+                    <option value="horror">Horror</option>
+                </select>
+
+                <label for="yearFrom">Year</label>
+                <select id="yearFrom">
+                    <option value="">From</option>
+                </select>
+                <select id="yearTo">
+                    <option value="">To</option>
+                </select>
+
+                <label class="ignore-option">
+                    <input type="checkbox" id="ignoreLists">
+                    Ignore books from my lists
+                </label>
+
+                <button type="button" id="searchButton">Search</button>
+            </div>
+        </section>
+
+        <section class="results">
+            <h2>Results</h2>
+            <div class="results-grid" id="searchResults"></div>
+        </section>
+    </main>
+
+    <script src="nav.js"></script>
+    <script src="lists.js"></script>
+    <script src="favorites.js"></script>
+    <script src="searchscript.js"></script>
+</body>
+</html>

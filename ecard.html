@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Library E-card</title>
+
+    <script src="nightmode.js"></script>
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="nav.css">
+    <link rel="stylesheet" href="ecard.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="menu-box" id="menuBox">
+
+            <button class="menu-button" id="menuButton">
+                ☰
+            </button>
+
+            <div class="menu-content">
+
+                <a href="search.html">Search</a>
+                <a href="browse.html">Browse All</a>
+                <a href="lists.html">Lists</a>
+                <a href="account.html">Account</a>
+
+            </div>
+
+        </div>
+
+
+        <a href="homepage.html" class="logo">
+
+            National Library
+
+            <img
+                class="logo-decoration"
+                src="images/logo-decoration.png"
+                alt=""
+            >
+
+        </a>
+
+
+        <div class="account-box" id="accountBox">
+
+            <button
+                class="account-button"
+                id="accountButton"
+            >
+                ◉
+            </button>
+
+
+            <div class="account-content">
+
+                <a href="profile.html">Profile</a>
+
+                <a href="borrowed-books.html">
+                    Borrowed Books
+                </a>
+
+                <a href="borrowing-history.html">
+                    Borrowing History
+                </a>
+
+                <a href="reading-history.html">
+                    Reading History
+                </a>
+
+                <a href="favorites.html">
+                    Favorites
+                </a>
+
+                <a href="ecard.html">
+                    Library E-card
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <section class="ecard-page">
+
+            <h3>Library E-card</h3>
+
+            <p class="ecard-subtitle">
+                Your official National Library membership card
+            </p>
+
+
+            <div class="library-card">
+
+
+                <!-- TOP -->
+
+                <div class="card-top">
+
+                    <div class="card-logo">
+
+                        NL
+
+                    </div>
+
+
+                    <div class="card-library-name">
+
+                        <h2>
+                            National Library
+                        </h2>
+
+                        <span>
+                            MEMBERSHIP CARD
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- MIDDLE -->
+
+                <div class="card-middle">
+
+
+                    <div class="member-photo">
+
+                        <div class="photo-placeholder">
+                            ◉
+                        </div>
+
+                    </div>
+
+
+                    <div class="member-information">
+
+
+                        <div class="card-info">
+
+                            <span class="info-label">
+                                MEMBER NAME
+                            </span>
+
+                            <strong id="memberName">
+                                Library Member
+                            </strong>
+
+                        </div>
+
+
+                        <div class="card-info">
+
+                            <span class="info-label">
+                                MEMBER ID
+                            </span>
+
+                            <strong id="memberId">
+                                NL-000001
+                            </strong>
+
+                        </div>
+
+
+                        <div class="card-info">
+
+                            <span class="info-label">
+                                MEMBER SINCE
+                            </span>
+
+                            <strong id="memberSince">
+                                2026
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- BOTTOM -->
+
+                <div class="card-bottom">
+
+                    <span class="card-number" id="cardNumber">
+                        NL • 2026 • 000001
+                    </span>
+
+
+                    <span class="card-status">
+                        ACTIVE MEMBER
+                    </span>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="nav.js"></script>
+    <script src="ecardscript.js"></script>
+
+</body>
+</html>
