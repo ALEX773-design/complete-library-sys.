@@ -152,3 +152,29 @@
     background-color: var(--mauve);
     color: var(--ivory);
 }
+
+#accountButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.account-avatar-img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.account-avatar-initial {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--mauve);
+    color: var(--ivory);
+    font-family: Georgia, serif;
+    font-size: 16px;
+}

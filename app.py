@@ -3,12 +3,22 @@ import sqlite3
 import datetime
 from flask import Flask, render_template, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-later")
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
 DB_PATH = "library.db"
 LOAN_PERIOD_DAYS = 14
+
+UPLOAD_FOLDER = os.path.join("static", "uploads", "avatars")
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def get_db():
@@ -51,6 +61,17 @@ def init_db():
             PRIMARY KEY (user_id, book_id)
         )
     """)
+
+    existing_columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
+    if "profile_picture" not in existing_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN profile_picture TEXT")
+    if "created_at" not in existing_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN created_at TEXT")
+        conn.execute(
+            "UPDATE users SET created_at = ? WHERE created_at IS NULL",
+            (datetime.datetime.utcnow().isoformat(),),
+        )
+
     conn.commit()
     conn.close()
 
@@ -96,8 +117,8 @@ def signup():
         return jsonify({"error": "Username already taken"}), 409
 
     conn.execute(
-        "INSERT INTO users (username, password_hash) VALUES (?, ?)",
-        (username, generate_password_hash(password)),
+        "INSERT INTO users (username, password_hash, created_at) VALUES (?, ?, ?)",
+        (username, generate_password_hash(password), datetime.datetime.utcnow().isoformat()),
     )
     conn.commit()
     user_id = conn.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()["id"]
@@ -136,7 +157,78 @@ def logout():
 def me():
     if "user_id" not in session:
         return jsonify({"logged_in": False}), 200
-    return jsonify({"logged_in": True, "username": session["username"]}), 200
+
+    conn = get_db()
+    user = conn.execute(
+        "SELECT profile_picture FROM users WHERE id = ?", (session["user_id"],)
+    ).fetchone()
+    conn.close()
+
+    avatar_url = f"/{user['profile_picture']}" if user and user["profile_picture"] else None
+
+    return jsonify({
+        "logged_in": True,
+        "username": session["username"],
+        "avatar_url": avatar_url,
+    }), 200
+
+
+@app.route("/api/profile")
+def get_profile():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    conn = get_db()
+    user = conn.execute(
+        "SELECT username, profile_picture, created_at FROM users WHERE id = ?",
+        (session["user_id"],),
+    ).fetchone()
+    books_borrowed = conn.execute(
+        "SELECT COUNT(*) AS count FROM loans WHERE user_id = ?", (session["user_id"],)
+    ).fetchone()["count"]
+    conn.close()
+
+    avatar_url = f"/{user['profile_picture']}" if user["profile_picture"] else None
+
+    return jsonify({
+        "username": user["username"],
+        "avatar_url": avatar_url,
+        "member_since": user["created_at"],
+        "books_borrowed": books_borrowed,
+    }), 200
+
+
+# ---------- Profile picture ----------
+
+@app.route("/api/profile-picture", methods=["POST"])
+def upload_profile_picture():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    file = request.files.get("avatar")
+    if not file or file.filename == "":
+        return jsonify({"error": "No file selected"}), 400
+    if not allowed_file(file.filename):
+        return jsonify({"error": "Only png, jpg, jpeg, or webp images are allowed"}), 400
+
+    extension = secure_filename(file.filename).rsplit(".", 1)[1].lower()
+    user_id = session["user_id"]
+
+    for existing_ext in ALLOWED_EXTENSIONS:
+        old_path = os.path.join(UPLOAD_FOLDER, f"{user_id}.{existing_ext}")
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
+    filename = f"{user_id}.{extension}"
+    file.save(os.path.join(UPLOAD_FOLDER, filename))
+
+    relative_path = f"static/uploads/avatars/{filename}"
+    conn = get_db()
+    conn.execute("UPDATE users SET profile_picture = ? WHERE id = ?", (relative_path, user_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Uploaded", "avatar_url": f"/{relative_path}"}), 200
 
 
 # ---------- Favorites ----------

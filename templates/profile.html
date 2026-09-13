@@ -43,21 +43,11 @@
     <main>
         <section class="page-content">
             <h1>Profile</h1>
-
-            <div class="mock-banner">Placeholder data — real profile info arrives with login/backend</div>
-
-            <div class="profile-card">
-                <div class="profile-avatar">◉</div>
-                <div class="profile-fields">
-                    <p class="profile-field"><strong>Name</strong>Jane Reader</p>
-                    <p class="profile-field"><strong>Student ID</strong>MTS2026-0142</p>
-                    <p class="profile-field"><strong>Member since</strong>August 2026</p>
-                    <p class="profile-field"><strong>Books borrowed</strong>0</p>
-                </div>
-            </div>
+            <div id="profileContainer"></div>
         </section>
     </main>
 
     <script src="{{ url_for('static', filename='nav.js') }}"></script>
+    <script src="{{ url_for('static', filename='profilepage.js') }}"></script>
 </body>
 </html>
