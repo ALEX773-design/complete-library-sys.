@@ -66,3 +66,32 @@
     color: var(--peach);
     opacity: 0.7;
 }
+
+.book-detail-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.borrow-btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 30px;
+    background: var(--peach);
+    color: var(--plum);
+    font-family: Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.borrow-btn:hover:not(:disabled) {
+    background: var(--ivory);
+}
+
+.borrow-btn:disabled {
+    background: var(--mauve);
+    color: var(--ivory);
+    opacity: 0.8;
+    cursor: default;
+}

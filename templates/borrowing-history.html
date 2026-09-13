@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borrowing History</title>
+    <title>National Library — Borrowing History</title>
     <script src="{{ url_for('static', filename='nightmode.js') }}"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='theme.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='pages.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='lists.css') }}">
 </head>
 <body>
-
     <header class="navbar">
         <div class="menu-box" id="menuBox">
             <button class="menu-button" id="menuButton">☰</button>
@@ -22,12 +20,10 @@
                 <a href="account.html">Account</a>
             </div>
         </div>
-
         <a href="homepage.html" class="logo">
             National Library
             <img class="logo-decoration" src="{{ url_for('static', filename='images/logo-decoration.png') }}" alt="">
         </a>
-
         <div class="account-box" id="accountBox">
             <button class="account-button" id="accountButton">◉</button>
             <div class="account-content">
@@ -37,20 +33,17 @@
                 <a href="reading-history.html">Reading History</a>
                 <a href="favorites.html">Favorites</a>
                 <a href="ecard.html">Library E-card</a>
+                <a href="#" id="logoutLink">Log Out</a>
             </div>
         </div>
     </header>
-
     <main>
-        <section class="page-content">
+        <section class="lists-page">
             <h1>Borrowing History</h1>
-            <div class="mock-banner">Placeholder data — real history needs the backend</div>
-            <div id="recordsContainer"></div>
+            <div id="historyContainer"></div>
         </section>
     </main>
-
     <script src="{{ url_for('static', filename='nav.js') }}"></script>
-    <script src="{{ url_for('static', filename='mockdata.js') }}"></script>
     <script src="{{ url_for('static', filename='borrowinghistorypage.js') }}"></script>
 </body>
 </html>

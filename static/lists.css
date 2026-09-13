@@ -273,3 +273,53 @@
 @media (max-width: 500px) {
     .list-book-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+.due-date {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: var(--ivory);
+    opacity: 0.75;
+}
+
+.return-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 5px 12px;
+    background: var(--plum-dark);
+    border: 1px solid var(--mauve);
+    border-radius: 14px;
+    color: var(--ivory);
+    font-family: Georgia, serif;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.return-btn:hover {
+    background: var(--mauve);
+}
+
+.return-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.loan-status {
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.loan-status.active {
+    background: var(--mauve);
+    color: var(--ivory);
+}
+
+.loan-status.returned {
+    background: transparent;
+    border: 1px solid var(--mauve);
+    color: var(--peach);
+    opacity: 0.8;
+}

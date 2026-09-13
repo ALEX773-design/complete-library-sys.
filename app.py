@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import datetime
 from flask import Flask, render_template, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -7,6 +8,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-later")
 
 DB_PATH = "library.db"
+LOAN_PERIOD_DAYS = 14
 
 
 def get_db():
@@ -28,6 +30,24 @@ def init_db():
         CREATE TABLE IF NOT EXISTS favorites (
             user_id INTEGER NOT NULL,
             book_id TEXT NOT NULL,
+            PRIMARY KEY (user_id, book_id)
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS loans (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            book_id TEXT NOT NULL,
+            borrowed_at TEXT NOT NULL,
+            due_at TEXT NOT NULL,
+            returned_at TEXT
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS reading_history (
+            user_id INTEGER NOT NULL,
+            book_id TEXT NOT NULL,
+            viewed_at TEXT NOT NULL,
             PRIMARY KEY (user_id, book_id)
         )
     """)
@@ -159,6 +179,109 @@ def remove_favorite(book_id):
     conn.commit()
     conn.close()
     return jsonify({"message": "Removed"}), 200
+
+
+# ---------- Loans ----------
+
+@app.route("/api/loans/active", methods=["GET"])
+def active_loans():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, book_id, borrowed_at, due_at FROM loans WHERE user_id = ? AND returned_at IS NULL",
+        (session["user_id"],),
+    ).fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in rows]), 200
+
+
+@app.route("/api/loans/history", methods=["GET"])
+def loan_history():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT id, book_id, borrowed_at, due_at, returned_at FROM loans WHERE user_id = ? ORDER BY borrowed_at DESC",
+        (session["user_id"],),
+    ).fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in rows]), 200
+
+
+@app.route("/api/loans/<book_id>", methods=["POST"])
+def borrow_book(book_id):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    conn = get_db()
+    existing = conn.execute(
+        "SELECT id FROM loans WHERE user_id = ? AND book_id = ? AND returned_at IS NULL",
+        (session["user_id"], book_id),
+    ).fetchone()
+    if existing:
+        conn.close()
+        return jsonify({"error": "Already borrowed"}), 409
+
+    now = datetime.datetime.utcnow()
+    due = now + datetime.timedelta(days=LOAN_PERIOD_DAYS)
+    conn.execute(
+        "INSERT INTO loans (user_id, book_id, borrowed_at, due_at) VALUES (?, ?, ?, ?)",
+        (session["user_id"], book_id, now.isoformat(), due.isoformat()),
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Borrowed", "due_at": due.isoformat()}), 201
+
+
+@app.route("/api/loans/<int:loan_id>/return", methods=["POST"])
+def return_book(loan_id):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    conn = get_db()
+    loan = conn.execute(
+        "SELECT id FROM loans WHERE id = ? AND user_id = ? AND returned_at IS NULL",
+        (loan_id, session["user_id"]),
+    ).fetchone()
+    if not loan:
+        conn.close()
+        return jsonify({"error": "Loan not found"}), 404
+    conn.execute(
+        "UPDATE loans SET returned_at = ? WHERE id = ?",
+        (datetime.datetime.utcnow().isoformat(), loan_id),
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Returned"}), 200
+
+
+# ---------- Reading history ----------
+
+@app.route("/api/reading-history", methods=["GET"])
+def get_reading_history():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT book_id, viewed_at FROM reading_history WHERE user_id = ? ORDER BY viewed_at DESC",
+        (session["user_id"],),
+    ).fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in rows]), 200
+
+
+@app.route("/api/reading-history/<book_id>", methods=["POST"])
+def log_reading_history(book_id):
+    if "user_id" not in session:
+        return jsonify({"logged": False}), 200
+    conn = get_db()
+    conn.execute(
+        "INSERT OR REPLACE INTO reading_history (user_id, book_id, viewed_at) VALUES (?, ?, ?)",
+        (session["user_id"], book_id, datetime.datetime.utcnow().isoformat()),
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"logged": True}), 200
 
 
 if __name__ == "__main__":
