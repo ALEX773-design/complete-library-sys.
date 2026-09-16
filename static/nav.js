@@ -79,3 +79,19 @@ async function applyLoginState() {
 }
 
 applyLoginState();
+
+// ---------- Admin custom CSS ----------
+// Loaded on every page since every page already includes nav.js.
+
+(async function loadCustomCss() {
+    try {
+        const response = await fetch("/custom.css");
+        const css = await response.text();
+        if (css.trim()) {
+            const style = document.createElement("style");
+            style.id = "admin-custom-css";
+            style.textContent = css;
+            document.head.appendChild(style);
+        }
+    } catch (error) {}
+})();

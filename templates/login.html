@@ -15,7 +15,13 @@
             <input type="text" id="username" placeholder="Username" required>
             <input type="password" id="password" placeholder="Password" required>
             <p id="authError" class="auth-error"></p>
-            <button type="submit" id="authSubmit">Log In</button>
+
+            <div id="loginButtons" class="login-buttons">
+                <button type="submit" id="studentLoginBtn">Student Login</button>
+                <button type="button" id="adminLoginBtn">Admin Login</button>
+            </div>
+
+            <button type="submit" id="signupSubmit" class="signup-submit-btn" hidden>Sign Up</button>
         </form>
 
         <p class="auth-toggle">

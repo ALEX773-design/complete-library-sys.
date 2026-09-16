@@ -42,7 +42,7 @@
 
     <main>
         <section class="page-content">
-            <div class="admin-banner">⚠ Admin only — not access-controlled yet, pending login system ⚠</div>
+            <div class="admin-banner">⚠ Admin only ⚠</div>
             <h1>Users</h1>
 
             <div class="admin-tabs">
@@ -61,11 +61,24 @@
 
             <div class="admin-panel-section" id="devPanel">
                 <div class="dev-panel">
-                    <div class="dev-row">Debug mode <button class="dev-btn" disabled>Off</button></div>
-                    <div class="dev-row">Add CSS <button class="dev-btn" disabled>Edit</button></div>
-                    <div class="dev-row">Maintenance mode <button class="dev-btn" disabled>Off</button></div>
-                    <div class="dev-row">Download data <button class="dev-btn" disabled>Export</button></div>
-                    <div class="dev-row danger">Delete all <button class="dev-btn" disabled>Delete</button></div>
+                    <div class="dev-row">
+                        Maintenance mode
+                        <button class="dev-btn" id="maintenanceToggleBtn">Off</button>
+                    </div>
+                    <div class="dev-row dev-row-stack">
+                        Custom CSS
+                        <textarea id="customCssInput" class="dev-textarea" placeholder="/* site-wide CSS, applies to every page */"></textarea>
+                        <button class="dev-btn" id="saveCssBtn">Save CSS</button>
+                    </div>
+                    <div class="dev-row">
+                        Download data
+                        <button class="dev-btn" id="downloadDataBtn">Export</button>
+                    </div>
+                    <div class="dev-row danger dev-row-stack">
+                        Delete all (non-admin accounts + their data)
+                        <input type="text" id="deleteConfirmInput" class="dev-input" placeholder="Type DELETE to confirm">
+                        <button class="dev-btn" id="deleteAllBtn">Delete</button>
+                    </div>
                 </div>
             </div>
         </section>

@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import datetime
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
@@ -16,6 +16,8 @@ UPLOAD_FOLDER = os.path.join("static", "uploads", "avatars")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+MAINTENANCE_ALLOWED_PATHS = {"/login.html", "/api/login", "/api/me", "/api/logout", "/custom.css"}
+
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -25,6 +27,22 @@ def get_db():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def get_current_user_row(user_id):
+    conn = get_db()
+    row = conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone()
+    conn.close()
+    return row
+
+
+def require_admin():
+    if "user_id" not in session:
+        return None
+    user = get_current_user_row(session["user_id"])
+    if not user or not user["is_admin"]:
+        return None
+    return user
 
 
 def init_db():
@@ -61,16 +79,38 @@ def init_db():
             PRIMARY KEY (user_id, book_id)
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS site_settings (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            maintenance_mode INTEGER NOT NULL DEFAULT 0,
+            custom_css TEXT NOT NULL DEFAULT ''
+        )
+    """)
+    conn.execute("INSERT OR IGNORE INTO site_settings (id, maintenance_mode, custom_css) VALUES (1, 0, '')")
 
     existing_columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
+
     if "profile_picture" not in existing_columns:
         conn.execute("ALTER TABLE users ADD COLUMN profile_picture TEXT")
+
     if "created_at" not in existing_columns:
         conn.execute("ALTER TABLE users ADD COLUMN created_at TEXT")
         conn.execute(
             "UPDATE users SET created_at = ? WHERE created_at IS NULL",
             (datetime.datetime.utcnow().isoformat(),),
         )
+
+    if "is_admin" not in existing_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0")
+        first_user = conn.execute("SELECT id FROM users ORDER BY id ASC LIMIT 1").fetchone()
+        if first_user:
+            conn.execute("UPDATE users SET is_admin = 1 WHERE id = ?", (first_user["id"],))
+
+    if "bio" not in existing_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN bio TEXT")
+
+    if "email" not in existing_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN email TEXT")
 
     conn.commit()
     conn.close()
@@ -79,7 +119,7 @@ def init_db():
 PAGES = [
     "homepage", "search", "browse", "lists", "favorites",
     "account", "profile", "borrowed-books", "borrowing-history",
-    "reading-history", "ecard", "users", "book",
+    "reading-history", "ecard", "book",
 ]
 
 @app.route("/")
@@ -96,6 +136,42 @@ for page in PAGES:
 @app.route("/login.html")
 def login_page():
     return render_template("login.html")
+
+
+# Users is deliberately NOT in the generic PAGES loop above — it needs its
+# own server-side check, so a non-admin is redirected before the template
+# is ever rendered, not just hidden by JS after the fact.
+@app.route("/users.html")
+def users_page():
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+    user = get_current_user_row(session["user_id"])
+    if not user or not user["is_admin"]:
+        return redirect(url_for("index"))
+    return render_template("users.html")
+
+
+# ---------- Site-wide maintenance gate ----------
+
+@app.before_request
+def check_maintenance_mode():
+    if request.path.startswith("/static/"):
+        return None
+    if request.path in MAINTENANCE_ALLOWED_PATHS:
+        return None
+
+    conn = get_db()
+    row = conn.execute("SELECT maintenance_mode FROM site_settings WHERE id = 1").fetchone()
+    conn.close()
+
+    if not row or not row["maintenance_mode"]:
+        return None
+    if require_admin():
+        return None
+
+    if request.path.startswith("/api/"):
+        return jsonify({"error": "Site is under maintenance"}), 503
+    return render_template("maintenance.html"), 503
 
 
 # ---------- Auth ----------
@@ -116,9 +192,12 @@ def signup():
         conn.close()
         return jsonify({"error": "Username already taken"}), 409
 
+    existing_count = conn.execute("SELECT COUNT(*) AS count FROM users").fetchone()["count"]
+    is_admin_value = 1 if existing_count == 0 else 0
+
     conn.execute(
-        "INSERT INTO users (username, password_hash, created_at) VALUES (?, ?, ?)",
-        (username, generate_password_hash(password), datetime.datetime.utcnow().isoformat()),
+        "INSERT INTO users (username, password_hash, created_at, is_admin) VALUES (?, ?, ?, ?)",
+        (username, generate_password_hash(password), datetime.datetime.utcnow().isoformat(), is_admin_value),
     )
     conn.commit()
     user_id = conn.execute("SELECT id FROM users WHERE username = ?", (username,)).fetchone()["id"]
@@ -134,6 +213,7 @@ def login():
     data = request.get_json(silent=True) or {}
     username = (data.get("username") or "").strip()
     password = data.get("password") or ""
+    expected_role = data.get("role")
 
     conn = get_db()
     user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
@@ -142,9 +222,12 @@ def login():
     if not user or not check_password_hash(user["password_hash"], password):
         return jsonify({"error": "Invalid username or password"}), 401
 
+    if expected_role == "admin" and not user["is_admin"]:
+        return jsonify({"error": "This account doesn't have admin access"}), 403
+
     session["user_id"] = user["id"]
     session["username"] = user["username"]
-    return jsonify({"message": "Logged in", "username": user["username"]}), 200
+    return jsonify({"message": "Logged in", "username": user["username"], "is_admin": bool(user["is_admin"])}), 200
 
 
 @app.route("/api/logout", methods=["POST"])
@@ -158,31 +241,26 @@ def me():
     if "user_id" not in session:
         return jsonify({"logged_in": False}), 200
 
-    conn = get_db()
-    user = conn.execute(
-        "SELECT profile_picture FROM users WHERE id = ?", (session["user_id"],)
-    ).fetchone()
-    conn.close()
-
+    user = get_current_user_row(session["user_id"])
     avatar_url = f"/{user['profile_picture']}" if user and user["profile_picture"] else None
 
     return jsonify({
         "logged_in": True,
         "username": session["username"],
         "avatar_url": avatar_url,
+        "is_admin": bool(user["is_admin"]) if user else False,
     }), 200
 
 
-@app.route("/api/profile")
+# ---------- Profile ----------
+
+@app.route("/api/profile", methods=["GET"])
 def get_profile():
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
+    user = get_current_user_row(session["user_id"])
     conn = get_db()
-    user = conn.execute(
-        "SELECT username, profile_picture, created_at FROM users WHERE id = ?",
-        (session["user_id"],),
-    ).fetchone()
     books_borrowed = conn.execute(
         "SELECT COUNT(*) AS count FROM loans WHERE user_id = ?", (session["user_id"],)
     ).fetchone()["count"]
@@ -195,7 +273,193 @@ def get_profile():
         "avatar_url": avatar_url,
         "member_since": user["created_at"],
         "books_borrowed": books_borrowed,
+        "is_admin": bool(user["is_admin"]),
+        "bio": user["bio"] or "",
+        "email": user["email"] or "",
     }), 200
+
+
+@app.route("/api/profile", methods=["PUT"])
+def update_profile():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json(silent=True) or {}
+    bio = (data.get("bio") or "").strip()[:500]
+    email = (data.get("email") or "").strip()[:200]
+
+    conn = get_db()
+    conn.execute("UPDATE users SET bio = ?, email = ? WHERE id = ?", (bio, email, session["user_id"]))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Profile updated"}), 200
+
+
+@app.route("/api/change-password", methods=["POST"])
+def change_password():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json(silent=True) or {}
+    current_password = data.get("current_password") or ""
+    new_password = data.get("new_password") or ""
+
+    if len(new_password) < 6:
+        return jsonify({"error": "New password must be at least 6 characters"}), 400
+
+    user = get_current_user_row(session["user_id"])
+    if not check_password_hash(user["password_hash"], current_password):
+        return jsonify({"error": "Current password is incorrect"}), 401
+
+    conn = get_db()
+    conn.execute(
+        "UPDATE users SET password_hash = ? WHERE id = ?",
+        (generate_password_hash(new_password), session["user_id"]),
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Password changed"}), 200
+
+
+# ---------- Users (admin only) ----------
+
+@app.route("/api/users")
+def get_users():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT username, profile_picture FROM users ORDER BY username COLLATE NOCASE"
+    ).fetchall()
+    conn.close()
+    return jsonify([
+        {"username": row["username"], "avatar_url": f"/{row['profile_picture']}" if row["profile_picture"] else None}
+        for row in rows
+    ]), 200
+
+
+@app.route("/api/admin/profiles")
+def get_admin_profiles():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    conn = get_db()
+    rows = conn.execute("""
+        SELECT u.username, u.profile_picture, u.created_at,
+               (SELECT COUNT(*) FROM loans WHERE loans.user_id = u.id) AS books_borrowed
+        FROM users u
+        ORDER BY u.username COLLATE NOCASE
+    """).fetchall()
+    conn.close()
+
+    return jsonify([
+        {
+            "username": row["username"],
+            "avatar_url": f"/{row['profile_picture']}" if row["profile_picture"] else None,
+            "member_since": row["created_at"],
+            "books_borrowed": row["books_borrowed"],
+        }
+        for row in rows
+    ]), 200
+
+
+# ---------- Admin: site settings / Dev tools ----------
+
+@app.route("/api/admin/settings")
+def get_admin_settings():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+    conn = get_db()
+    row = conn.execute("SELECT maintenance_mode, custom_css FROM site_settings WHERE id = 1").fetchone()
+    conn.close()
+    return jsonify({
+        "maintenance_mode": bool(row["maintenance_mode"]),
+        "custom_css": row["custom_css"] or "",
+    }), 200
+
+
+@app.route("/api/admin/settings/maintenance", methods=["POST"])
+def set_maintenance_mode():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+    data = request.get_json(silent=True) or {}
+    on = bool(data.get("on"))
+    conn = get_db()
+    conn.execute("UPDATE site_settings SET maintenance_mode = ? WHERE id = 1", (1 if on else 0,))
+    conn.commit()
+    conn.close()
+    return jsonify({"maintenance_mode": on}), 200
+
+
+@app.route("/api/admin/settings/css", methods=["POST"])
+def set_custom_css():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+    data = request.get_json(silent=True) or {}
+    css = (data.get("css") or "")[:20000]
+    conn = get_db()
+    conn.execute("UPDATE site_settings SET custom_css = ? WHERE id = 1", (css,))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Saved"}), 200
+
+
+@app.route("/custom.css")
+def serve_custom_css():
+    conn = get_db()
+    row = conn.execute("SELECT custom_css FROM site_settings WHERE id = 1").fetchone()
+    conn.close()
+    return app.response_class(row["custom_css"] if row else "", mimetype="text/css")
+
+
+@app.route("/api/admin/export")
+def export_data():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    conn = get_db()
+    users = [dict(row) for row in conn.execute(
+        "SELECT id, username, email, bio, created_at, is_admin FROM users"
+    ).fetchall()]
+    loans = [dict(row) for row in conn.execute("SELECT * FROM loans").fetchall()]
+    favorites = [dict(row) for row in conn.execute("SELECT * FROM favorites").fetchall()]
+    reading_history = [dict(row) for row in conn.execute("SELECT * FROM reading_history").fetchall()]
+    conn.close()
+
+    export = {
+        "exported_at": datetime.datetime.utcnow().isoformat(),
+        "users": users,
+        "loans": loans,
+        "favorites": favorites,
+        "reading_history": reading_history,
+    }
+
+    response = jsonify(export)
+    response.headers["Content-Disposition"] = "attachment; filename=national-library-export.json"
+    return response
+
+
+@app.route("/api/admin/delete-all", methods=["POST"])
+def delete_all_data():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    data = request.get_json(silent=True) or {}
+    if data.get("confirm") != "DELETE":
+        return jsonify({"error": "Type DELETE exactly to confirm"}), 400
+
+    conn = get_db()
+    non_admin_ids = [row["id"] for row in conn.execute("SELECT id FROM users WHERE is_admin = 0").fetchall()]
+
+    for uid in non_admin_ids:
+        conn.execute("DELETE FROM loans WHERE user_id = ?", (uid,))
+        conn.execute("DELETE FROM favorites WHERE user_id = ?", (uid,))
+        conn.execute("DELETE FROM reading_history WHERE user_id = ?", (uid,))
+    conn.execute("DELETE FROM users WHERE is_admin = 0")
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": f"Deleted {len(non_admin_ids)} non-admin accounts and their data"}), 200
 
 
 # ---------- Profile picture ----------

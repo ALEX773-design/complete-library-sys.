@@ -50,3 +50,38 @@
     color: var(--peach);
     cursor: pointer;
 }
+.login-buttons {
+    display: flex;
+    gap: 10px;
+}
+.login-buttons button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    font-family: Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+}
+#studentLoginBtn {
+    background: var(--peach);
+    color: var(--plum);
+}
+#studentLoginBtn:hover { background: var(--ivory); }
+#adminLoginBtn {
+    background: transparent;
+    border: 1px solid var(--mauve) !important;
+    color: var(--peach);
+}
+#adminLoginBtn:hover { background: var(--mauve); color: var(--ivory); }
+.signup-submit-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 3px;
+    background: var(--peach);
+    color: var(--plum);
+    font-family: Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+}
+.signup-submit-btn:hover { background: var(--ivory); }

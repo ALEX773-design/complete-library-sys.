@@ -143,6 +143,7 @@
 }
 
 .profile-field strong {
+    
     color: var(--peach);
     margin-right: 8px;
 }
