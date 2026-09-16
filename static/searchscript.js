@@ -10,7 +10,7 @@ const searchResults = document.getElementById("searchResults");
 const yearFrom = document.getElementById("yearFrom");
 const yearTo = document.getElementById("yearTo");
 
-fetch("/static/books.json")
+fetch("/api/books")
     .then((response) => response.json())
     .then((data) => {
         books = data;

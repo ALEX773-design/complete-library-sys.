@@ -4,7 +4,7 @@ const historyContainer = document.querySelector(".history-books");
 async function loadHomepageBooks() {
     let allBooks = [];
     try {
-        const response = await fetch("/static/books.json");
+        const response = await fetch("/api/books");
         allBooks = await response.json();
     } catch (error) {
         carousel.innerHTML = `<p>Couldn't load books right now.</p>`;

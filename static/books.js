@@ -9,7 +9,7 @@ async function initBookDetail() {
 
     let books;
     try {
-        const response = await fetch("/static/books.json");
+        const response = await fetch("/api/books");
         books = await response.json();
     } catch (error) {
         container.innerHTML = `<p class="book-detail-notfound">Couldn't load the library right now.</p>`;

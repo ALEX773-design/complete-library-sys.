@@ -1,4 +1,5 @@
 import os
+import json
 import sqlite3
 import datetime
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
@@ -45,6 +46,41 @@ def require_admin():
     return user
 
 
+def seed_books_if_empty():
+    conn = get_db()
+    count = conn.execute("SELECT COUNT(*) AS count FROM books").fetchone()["count"]
+    if count > 0:
+        conn.close()
+        return
+
+    books_json_path = os.path.join("static", "books.json")
+    if not os.path.exists(books_json_path):
+        conn.close()
+        return
+
+    with open(books_json_path) as f:
+        books_data = json.load(f)
+
+    for book in books_data:
+        conn.execute(
+            "INSERT INTO books (id, title, author, year, popularity, added_date, cover) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                book["id"], book.get("title"), book.get("author"),
+                book.get("year"), book.get("popularity"),
+                book.get("addedDate"), book.get("cover"),
+            ),
+        )
+        for genre in book.get("genres", []):
+            conn.execute(
+                "INSERT OR IGNORE INTO book_genres (book_id, genre) VALUES (?, ?)",
+                (book["id"], genre),
+            )
+
+    conn.commit()
+    conn.close()
+    print(f"Seeded {len(books_data)} books into the database.")
+
+
 def init_db():
     conn = get_db()
     conn.execute("""
@@ -88,6 +124,26 @@ def init_db():
     """)
     conn.execute("INSERT OR IGNORE INTO site_settings (id, maintenance_mode, custom_css) VALUES (1, 0, '')")
 
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS books (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            author TEXT,
+            year INTEGER,
+            popularity INTEGER,
+            added_date TEXT,
+            cover TEXT
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS book_genres (
+            book_id TEXT NOT NULL,
+            genre TEXT NOT NULL,
+            PRIMARY KEY (book_id, genre),
+            FOREIGN KEY (book_id) REFERENCES books(id)
+        )
+    """)
+
     existing_columns = [row["name"] for row in conn.execute("PRAGMA table_info(users)").fetchall()]
 
     if "profile_picture" not in existing_columns:
@@ -115,6 +171,8 @@ def init_db():
     conn.commit()
     conn.close()
 
+    seed_books_if_empty()
+
 
 PAGES = [
     "homepage", "search", "browse", "lists", "favorites",
@@ -138,9 +196,6 @@ def login_page():
     return render_template("login.html")
 
 
-# Users is deliberately NOT in the generic PAGES loop above — it needs its
-# own server-side check, so a non-admin is redirected before the template
-# is ever rendered, not just hidden by JS after the fact.
 @app.route("/users.html")
 def users_page():
     if "user_id" not in session:
@@ -172,6 +227,34 @@ def check_maintenance_mode():
     if request.path.startswith("/api/"):
         return jsonify({"error": "Site is under maintenance"}), 503
     return render_template("maintenance.html"), 503
+
+
+# ---------- Books ----------
+
+@app.route("/api/books")
+def get_books():
+    conn = get_db()
+    books = conn.execute("SELECT * FROM books ORDER BY id").fetchall()
+    genre_rows = conn.execute("SELECT * FROM book_genres").fetchall()
+    conn.close()
+
+    genres_by_book = {}
+    for row in genre_rows:
+        genres_by_book.setdefault(row["book_id"], []).append(row["genre"])
+
+    return jsonify([
+        {
+            "id": book["id"],
+            "title": book["title"],
+            "author": book["author"],
+            "genres": genres_by_book.get(book["id"], []),
+            "year": book["year"],
+            "popularity": book["popularity"],
+            "addedDate": book["added_date"],
+            "cover": book["cover"],
+        }
+        for book in books
+    ]), 200
 
 
 # ---------- Auth ----------
@@ -269,6 +352,7 @@ def get_profile():
     avatar_url = f"/{user['profile_picture']}" if user["profile_picture"] else None
 
     return jsonify({
+        "user_id": user["id"],
         "username": user["username"],
         "avatar_url": avatar_url,
         "member_since": user["created_at"],
@@ -424,6 +508,7 @@ def export_data():
     loans = [dict(row) for row in conn.execute("SELECT * FROM loans").fetchall()]
     favorites = [dict(row) for row in conn.execute("SELECT * FROM favorites").fetchall()]
     reading_history = [dict(row) for row in conn.execute("SELECT * FROM reading_history").fetchall()]
+    books = [dict(row) for row in conn.execute("SELECT * FROM books").fetchall()]
     conn.close()
 
     export = {
@@ -432,6 +517,7 @@ def export_data():
         "loans": loans,
         "favorites": favorites,
         "reading_history": reading_history,
+        "books": books,
     }
 
     response = jsonify(export)

@@ -341,3 +341,68 @@
     text-decoration: underline;
     cursor: pointer;
 }
+
+.profile-edit-section {
+    margin-top: 40px;
+    max-width: 480px;
+}
+.profile-edit-section h2 {
+    font-family: Georgia, serif;
+    color: var(--peach);
+    font-weight: normal;
+    font-size: 20px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--mauve);
+    padding-bottom: 8px;
+}
+.profile-label {
+    display: block;
+    font-size: 13px;
+    color: var(--ivory);
+    opacity: 0.75;
+    margin: 14px 0 6px;
+}
+.profile-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 3px;
+    background: var(--ivory);
+    color: var(--plum);
+    font-family: Georgia, serif;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+.profile-textarea { min-height: 80px; resize: vertical; }
+.profile-save-btn {
+    margin-top: 16px;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 3px;
+    background: var(--peach);
+    color: var(--plum);
+    font-family: Georgia, serif;
+    font-size: 14px;
+    cursor: pointer;
+}
+.profile-save-btn:hover { background: var(--ivory); }
+.profile-save-msg { margin-top: 10px; font-size: 13px; min-height: 16px; }
+.profile-save-msg.success { color: var(--peach); }
+.profile-save-msg.error { color: #e08585; }
+
+.dev-row-stack { flex-direction: column; align-items: flex-start; gap: 8px; }
+.dev-textarea {
+    width: 100%; min-height: 100px; padding: 10px;
+    background: var(--ivory); color: var(--plum);
+    border: none; border-radius: 3px;
+    font-family: monospace; font-size: 13px;
+    box-sizing: border-box; resize: vertical;
+}
+.dev-input {
+    width: 100%; padding: 8px 10px;
+    background: var(--ivory); color: var(--plum);
+    border: none; border-radius: 3px;
+    font-family: Georgia, serif; font-size: 13px;
+    box-sizing: border-box;
+}
+.dev-btn-on { background: var(--peach); color: var(--plum); }

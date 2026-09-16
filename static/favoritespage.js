@@ -3,7 +3,7 @@ const favoritesContainer = document.getElementById("favoritesContainer");
 
 async function init() {
     try {
-        const booksResponse = await fetch("/static/books.json");
+        const booksResponse = await fetch("/api/books");
         allBooks = await booksResponse.json();
         await loadFavorites();
         renderFavorites();

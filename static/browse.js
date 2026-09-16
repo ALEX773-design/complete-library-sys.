@@ -3,7 +3,7 @@ let books = [];
 const browseBooks = document.getElementById("browseBooks");
 const browseTabs = document.querySelectorAll(".browse-tab");
 
-fetch("/static/books.json")
+fetch("/api/books")
     .then((response) => response.json())
     .then((data) => {
         books = data;

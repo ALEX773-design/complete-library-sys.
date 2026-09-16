@@ -21,7 +21,7 @@ async function initReadingHistory() {
 
     let books = [];
     try {
-        const booksResponse = await fetch("/static/books.json");
+        const booksResponse = await fetch("/api/books");
         books = await booksResponse.json();
     } catch (error) {}
 
