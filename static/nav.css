@@ -178,3 +178,7 @@
     font-family: Georgia, serif;
     font-size: 16px;
 }
+
+.admin-only-hidden {
+    display: none !important;
+}

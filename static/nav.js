@@ -35,8 +35,9 @@ document.addEventListener("click", (e) => {
 // ---------- Login state ----------
 // Swaps the account button's icon (profile picture / initial / default)
 // and the Log In vs Log Out link, based on whatever /api/me reports.
-// Built dynamically here rather than in each page's HTML, since that
-// markup already drifted (some pages had a logoutLink, some didn't).
+// Also shows/hides any element marked data-requires-admin, so admin-only
+// links (like Users) never appear for non-admins, without each page
+// needing its own check.
 
 async function applyLoginState() {
     let state = { logged_in: false };
@@ -76,6 +77,11 @@ async function applyLoginState() {
         authLink.textContent = "Log In";
     }
     accountContent.appendChild(authLink);
+
+    const isAdmin = state.logged_in && state.is_admin;
+    document.querySelectorAll("[data-requires-admin]").forEach((el) => {
+        el.classList.toggle("admin-only-hidden", !isAdmin);
+    });
 }
 
 applyLoginState();
@@ -97,13 +103,18 @@ applyLoginState();
 })();
 
 // ---------- Footer text ----------
+// footer.html is included AFTER this script tag in every template, so the
+// #footerText element doesn't exist yet when this file first runs. Wait
+// for DOMContentLoaded, which fires once the whole page (footer included)
+// has been parsed.
 
-(async function loadFooterText() {
+function loadFooterText() {
     const footerEl = document.getElementById("footerText");
     if (!footerEl) return;
-    try {
-        const response = await fetch("/api/footer");
-        const data = await response.json();
-        footerEl.textContent = data.footer_text || "";
-    } catch (error) {}
-})();
+    fetch("/api/footer")
+        .then((response) => response.json())
+        .then((data) => { footerEl.textContent = data.footer_text || ""; })
+        .catch(() => {});
+}
+
+document.addEventListener("DOMContentLoaded", loadFooterText);
