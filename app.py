@@ -12,6 +12,7 @@ app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
 DB_PATH = "library.db"
 LOAN_PERIOD_DAYS = 14
+ACTIVE_WINDOW_MINUTES = 10
 
 UPLOAD_FOLDER = os.path.join("static", "uploads", "avatars")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
@@ -119,9 +120,14 @@ def init_db():
         CREATE TABLE IF NOT EXISTS site_settings (
             id INTEGER PRIMARY KEY CHECK (id = 1),
             maintenance_mode INTEGER NOT NULL DEFAULT 0,
-            custom_css TEXT NOT NULL DEFAULT ''
+            custom_css TEXT NOT NULL DEFAULT '',
+            footer_text TEXT NOT NULL DEFAULT 'National Library — a project by a student, for students.'
         )
     """)
+    site_settings_columns = [row["name"] for row in conn.execute("PRAGMA table_info(site_settings)").fetchall()]
+    if "footer_text" not in site_settings_columns:
+        conn.execute("ALTER TABLE site_settings ADD COLUMN footer_text TEXT NOT NULL DEFAULT 'National Library — a project by a student, for students.'")
+
     conn.execute("INSERT OR IGNORE INTO site_settings (id, maintenance_mode, custom_css) VALUES (1, 0, '')")
 
     conn.execute("""
@@ -167,6 +173,9 @@ def init_db():
 
     if "email" not in existing_columns:
         conn.execute("ALTER TABLE users ADD COLUMN email TEXT")
+
+    if "last_seen" not in existing_columns:
+        conn.execute("ALTER TABLE users ADD COLUMN last_seen TEXT")
 
     conn.commit()
     conn.close()
@@ -324,6 +333,11 @@ def me():
     if "user_id" not in session:
         return jsonify({"logged_in": False}), 200
 
+    conn = get_db()
+    conn.execute("UPDATE users SET last_seen = ? WHERE id = ?", (datetime.datetime.utcnow().isoformat(), session["user_id"]))
+    conn.commit()
+    conn.close()
+
     user = get_current_user_row(session["user_id"])
     avatar_url = f"/{user['profile_picture']}" if user and user["profile_picture"] else None
 
@@ -411,15 +425,42 @@ def change_password():
 def get_users():
     if not require_admin():
         return jsonify({"error": "Admin access required"}), 403
+    cutoff = (datetime.datetime.utcnow() - datetime.timedelta(minutes=ACTIVE_WINDOW_MINUTES)).isoformat()
     conn = get_db()
     rows = conn.execute(
-        "SELECT username, profile_picture FROM users ORDER BY username COLLATE NOCASE"
+        "SELECT username, profile_picture FROM users WHERE last_seen IS NOT NULL AND last_seen >= ? ORDER BY username COLLATE NOCASE",
+        (cutoff,),
     ).fetchall()
     conn.close()
     return jsonify([
         {"username": row["username"], "avatar_url": f"/{row['profile_picture']}" if row["profile_picture"] else None}
         for row in rows
     ]), 200
+
+
+@app.route("/api/admin/user/<username>")
+def get_admin_user_detail(username):
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE username = ?", (username,)).fetchone()
+    if not user:
+        conn.close()
+        return jsonify({"error": "User not found"}), 404
+    books_borrowed = conn.execute("SELECT COUNT(*) AS count FROM loans WHERE user_id = ?", (user["id"],)).fetchone()["count"]
+    favorites_count = conn.execute("SELECT COUNT(*) AS count FROM favorites WHERE user_id = ?", (user["id"],)).fetchone()["count"]
+    conn.close()
+    return jsonify({
+        "username": user["username"],
+        "email": user["email"] or "",
+        "bio": user["bio"] or "",
+        "avatar_url": f"/{user['profile_picture']}" if user["profile_picture"] else None,
+        "member_since": user["created_at"],
+        "is_admin": bool(user["is_admin"]),
+        "books_borrowed": books_borrowed,
+        "favorites_count": favorites_count,
+        "last_seen": user["last_seen"],
+    }), 200
 
 
 @app.route("/api/admin/profiles")
@@ -454,11 +495,12 @@ def get_admin_settings():
     if not require_admin():
         return jsonify({"error": "Admin access required"}), 403
     conn = get_db()
-    row = conn.execute("SELECT maintenance_mode, custom_css FROM site_settings WHERE id = 1").fetchone()
+    row = conn.execute("SELECT maintenance_mode, custom_css, footer_text FROM site_settings WHERE id = 1").fetchone()
     conn.close()
     return jsonify({
         "maintenance_mode": bool(row["maintenance_mode"]),
         "custom_css": row["custom_css"] or "",
+        "footer_text": row["footer_text"] or "",
     }), 200
 
 
@@ -483,6 +525,27 @@ def set_custom_css():
     css = (data.get("css") or "")[:20000]
     conn = get_db()
     conn.execute("UPDATE site_settings SET custom_css = ? WHERE id = 1", (css,))
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Saved"}), 200
+
+
+@app.route("/api/footer")
+def get_footer():
+    conn = get_db()
+    row = conn.execute("SELECT footer_text FROM site_settings WHERE id = 1").fetchone()
+    conn.close()
+    return jsonify({"footer_text": row["footer_text"] if row else ""}), 200
+
+
+@app.route("/api/admin/settings/footer", methods=["POST"])
+def set_footer_text():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+    data = request.get_json(silent=True) or {}
+    text = (data.get("footer_text") or "")[:1000]
+    conn = get_db()
+    conn.execute("UPDATE site_settings SET footer_text = ? WHERE id = 1", (text,))
     conn.commit()
     conn.close()
     return jsonify({"message": "Saved"}), 200

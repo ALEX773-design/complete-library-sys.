@@ -95,3 +95,15 @@ applyLoginState();
         }
     } catch (error) {}
 })();
+
+// ---------- Footer text ----------
+
+(async function loadFooterText() {
+    const footerEl = document.getElementById("footerText");
+    if (!footerEl) return;
+    try {
+        const response = await fetch("/api/footer");
+        const data = await response.json();
+        footerEl.textContent = data.footer_text || "";
+    } catch (error) {}
+})();

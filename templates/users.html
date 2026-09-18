@@ -70,6 +70,11 @@
                         <textarea id="customCssInput" class="dev-textarea" placeholder="/* site-wide CSS, applies to every page */"></textarea>
                         <button class="dev-btn" id="saveCssBtn">Save CSS</button>
                     </div>
+                    <div class="dev-row dev-row-stack">
+                        Footer text
+                        <textarea id="footerTextInput" class="dev-textarea" placeholder="Text shown in the footer on every page"></textarea>
+                        <button class="dev-btn" id="saveFooterBtn">Save Footer</button>
+                    </div>
                     <div class="dev-row">
                         Download data
                         <button class="dev-btn" id="downloadDataBtn">Export</button>
@@ -86,5 +91,6 @@
 
     <script src="{{ url_for('static', filename='nav.js') }}"></script>
     <script src="{{ url_for('static', filename='userspage.js') }}"></script>
+    {% include "footer.html" %}
 </body>
 </html>
