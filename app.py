@@ -266,6 +266,57 @@ def get_books():
     ]), 200
 
 
+# ---------- Books (admin) ----------
+
+@app.route("/api/admin/books", methods=["POST"])
+def add_book():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    data = request.get_json(silent=True) or {}
+    title = (data.get("title") or "").strip()
+    author = (data.get("author") or "").strip()
+    cover = (data.get("cover") or "").strip()
+    genres = data.get("genres") or []
+
+    if not title:
+        return jsonify({"error": "Title is required"}), 400
+
+    year_raw = data.get("year")
+    try:
+        year = int(year_raw) if year_raw not in (None, "") else None
+    except (TypeError, ValueError):
+        return jsonify({"error": "Year must be a number"}), 400
+
+    popularity_raw = data.get("popularity")
+    try:
+        popularity = int(popularity_raw) if popularity_raw not in (None, "") else 0
+    except (TypeError, ValueError):
+        return jsonify({"error": "Popularity must be a number"}), 400
+
+    conn = get_db()
+    existing_ids = conn.execute("SELECT id FROM books").fetchall()
+    max_num = 0
+    for row in existing_ids:
+        bid = row["id"]
+        if bid.startswith("b") and bid[1:].isdigit():
+            max_num = max(max_num, int(bid[1:]))
+    new_id = f"b{max_num + 1:02d}"
+
+    conn.execute(
+        "INSERT INTO books (id, title, author, year, popularity, added_date, cover) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (new_id, title, author, year, popularity, datetime.datetime.utcnow().isoformat(), cover),
+    )
+    for genre in genres:
+        genre = (genre or "").strip().lower()
+        if genre:
+            conn.execute("INSERT OR IGNORE INTO book_genres (book_id, genre) VALUES (?, ?)", (new_id, genre))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Book added", "id": new_id}), 201
+
+
 # ---------- Auth ----------
 
 @app.route("/api/signup", methods=["POST"])

@@ -105,6 +105,59 @@ function wireDevPanel() {
     });
 }
 
+const BOOK_GENRES = ["science-fiction", "dystopian", "fantasy", "mystery", "romance", "history", "science", "thriller", "horror"];
+
+function renderGenreCheckboxes() {
+    const container = document.getElementById("genreCheckboxes");
+    if (!container) return;
+    container.innerHTML = BOOK_GENRES.map((genre) => `
+        <label class="genre-checkbox-label">
+            <input type="checkbox" value="${genre}" class="genre-checkbox">
+            ${genre}
+        </label>
+    `).join("");
+}
+
+function wireAddBookForm() {
+    const form = document.getElementById("addBookForm");
+    if (!form) return;
+    const messageEl = document.getElementById("addBookMessage");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const title = document.getElementById("bookTitleInput").value.trim();
+        const author = document.getElementById("bookAuthorInput").value.trim();
+        const year = document.getElementById("bookYearInput").value.trim();
+        const popularity = document.getElementById("bookPopularityInput").value.trim();
+        const cover = document.getElementById("bookCoverInput").value.trim();
+        const genres = Array.from(document.querySelectorAll(".genre-checkbox:checked")).map((cb) => cb.value);
+
+        messageEl.style.display = "none";
+
+        try {
+            const response = await fetch("/api/admin/books", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, author, year, popularity, cover, genres }),
+            });
+            const data = await response.json();
+            messageEl.style.display = "block";
+            if (response.ok) {
+                messageEl.textContent = `Added "${title}" (${data.id}).`;
+                messageEl.style.color = "";
+                form.reset();
+            } else {
+                messageEl.textContent = data.error || "Couldn't add the book.";
+                messageEl.style.color = "#e08080";
+            }
+        } catch (error) {
+            messageEl.style.display = "block";
+            messageEl.textContent = "Couldn't reach the server.";
+            messageEl.style.color = "#e08080";
+        }
+    });
+}
+
 async function init() {
     let me;
     try { me = await (await fetch("/api/me")).json(); } catch (error) { me = { logged_in: false }; }
@@ -130,6 +183,8 @@ async function init() {
 
     loadDevSettings();
     wireDevPanel();
+    renderGenreCheckboxes();
+    wireAddBookForm();
 }
 
 const tabs = document.querySelectorAll(".admin-tab");

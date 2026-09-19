@@ -48,6 +48,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" data-panel="usersPanel">Users</button>
                 <button class="admin-tab" data-panel="allProfilesPanel">All Profiles</button>
+                <button class="admin-tab" data-panel="addBookPanel">Add Book</button>
                 <button class="admin-tab" data-panel="devPanel">Dev</button>
             </div>
 
@@ -57,6 +58,37 @@
 
             <div class="admin-panel-section" id="allProfilesPanel">
                 <div id="allProfilesContainer"></div>
+            </div>
+
+            <div class="admin-panel-section" id="addBookPanel">
+                <form id="addBookForm" class="dev-panel">
+                    <div class="dev-row dev-row-stack">
+                        Title
+                        <input type="text" id="bookTitleInput" class="dev-input" placeholder="Book title" required>
+                    </div>
+                    <div class="dev-row dev-row-stack">
+                        Author
+                        <input type="text" id="bookAuthorInput" class="dev-input" placeholder="Author name">
+                    </div>
+                    <div class="dev-row dev-row-stack">
+                        Year
+                        <input type="number" id="bookYearInput" class="dev-input" placeholder="Publication year">
+                    </div>
+                    <div class="dev-row dev-row-stack">
+                        Popularity (optional)
+                        <input type="number" id="bookPopularityInput" class="dev-input" placeholder="0">
+                    </div>
+                    <div class="dev-row dev-row-stack">
+                        Cover image URL
+                        <input type="text" id="bookCoverInput" class="dev-input" placeholder="static/images/covers/example.jpg">
+                    </div>
+                    <div class="dev-row dev-row-stack">
+                        Genres
+                        <div class="genre-checkboxes" id="genreCheckboxes"></div>
+                    </div>
+                    <button type="submit" class="dev-btn">Add Book</button>
+                    <p id="addBookMessage" class="lists-empty" style="display:none;"></p>
+                </form>
             </div>
 
             <div class="admin-panel-section" id="devPanel">
