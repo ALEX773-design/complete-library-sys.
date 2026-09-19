@@ -1,4 +1,11 @@
-venv/
 __pycache__/
-*.db
-*:Zone.Identifierstatic/uploads/
+*.pyc
+venv/
+.venv/
+env/
+instance/
+library.db
+*.db-journal
+.env
+static/uploads/avatars/*
+!static/uploads/avatars/.gitkeep

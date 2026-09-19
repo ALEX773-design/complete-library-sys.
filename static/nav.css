@@ -183,14 +183,82 @@
     display: none !important;
 }
 
-.notif-bell { position:relative; background:none; border:none; color:var(--ivory); font-size:20px; cursor:pointer; margin-left:auto; margin-right:12px; }
-.notif-badge { position:absolute; top:-4px; right:-6px; background:#c0435a; color:#fff; font-size:10px; min-width:16px; height:16px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 4px; }
-.notif-dropdown { display:none; position:absolute; top:56px; right:70px; background:var(--plum-dark); border:1px solid var(--mauve); border-radius:8px; width:280px; max-height:360px; overflow-y:auto; z-index:2500; }
-.notif-dropdown.open { display:block; }
-.notif-dropdown-header { padding:12px 14px; font-weight:bold; border-bottom:1px solid var(--mauve); color:var(--peach); }
-.notif-list { padding:6px 0; }
-.notif-item { padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.05); }
-.notif-item p { margin:0 0 4px 0; font-size:13px; color:var(--ivory); }
-.notif-time { font-size:11px; opacity:0.6; }
-.notif-unread { background:rgba(255,255,255,0.04); }
-.login-only-hidden { display:none !important; }
+.notif-bell {
+    position: relative;
+    margin-left: auto;
+    margin-right: 12px;
+    background: none;
+    border: none;
+    color: var(--ivory);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.notif-badge {
+    position: absolute;
+    top: -4px;
+    left: -35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: #c0435a;
+    color: #fff;
+    font-size: 10px;
+}
+
+.notif-dropdown {
+    position: absolute;
+    top: 56px;
+    right: 70px;
+    z-index: 2500;
+    display: none;
+    width: 280px;
+    max-height: 360px;
+    overflow-y: auto;
+    background: var(--plum-dark);
+    border: 1px solid var(--mauve);
+    border-radius: 8px;
+}
+
+.notif-dropdown.open {
+    display: block;
+}
+
+.notif-dropdown-header {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--mauve);
+    color: var(--peach);
+    font-weight: bold;
+}
+
+.notif-list {
+    padding: 6px 0;
+}
+
+.notif-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.notif-item p {
+    margin: 0 0 4px;
+    color: var(--ivory);
+    font-size: 13px;
+}
+
+.notif-time {
+    font-size: 11px;
+    opacity: 0.6;
+}
+
+.notif-unread {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.login-only-hidden {
+    display: none !important;
+}
