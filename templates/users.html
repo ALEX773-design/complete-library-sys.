@@ -11,34 +11,7 @@
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="menu-box" id="menuBox">
-            <button class="menu-button" id="menuButton">☰</button>
-            <div class="menu-content">
-                <a href="search.html">Search</a>
-                <a href="browse.html">Browse All</a>
-                <a href="lists.html">Lists</a>
-                <a href="account.html">Account</a>
-            </div>
-        </div>
-
-        <a href="homepage.html" class="logo">
-            National Library
-            <img class="logo-decoration" src="{{ url_for('static', filename='images/logo-decoration.png') }}" alt="">
-        </a>
-
-        <div class="account-box" id="accountBox">
-            <button class="account-button" id="accountButton">◉</button>
-            <div class="account-content">
-                <a href="profile.html">Profile</a>
-                <a href="borrowed-books.html">Borrowed Books</a>
-                <a href="borrowing-history.html">Borrowing History</a>
-                <a href="reading-history.html">Reading History</a>
-                <a href="favorites.html">Favorites</a>
-                <a href="ecard.html">Library E-card</a>
-            </div>
-        </div>
-    </header>
+    {% include "header.html" %}
 
     <main>
         <section class="page-content">
@@ -49,6 +22,7 @@
                 <button class="admin-tab active" data-panel="usersPanel">Users</button>
                 <button class="admin-tab" data-panel="allProfilesPanel">All Profiles</button>
                 <button class="admin-tab" data-panel="addBookPanel">Add Book</button>
+                <button class="admin-tab" data-panel="notifyPanel">Notify</button>
                 <button class="admin-tab" data-panel="devPanel">Dev</button>
             </div>
 
@@ -88,6 +62,25 @@
                     </div>
                     <button type="submit" class="dev-btn">Add Book</button>
                     <p id="addBookMessage" class="lists-empty" style="display:none;"></p>
+                </form>
+            </div>
+
+            <div class="admin-panel-section" id="notifyPanel">
+                <form id="sendNotificationForm" class="dev-panel">
+                    <div class="dev-row dev-row-stack">
+                        Message
+                        <textarea id="notificationMessageInput" class="dev-textarea" placeholder="What should they see?" required></textarea>
+                    </div>
+                    <div class="dev-row">
+                        <label><input type="radio" name="notifyTarget" value="all" checked> Everyone</label>
+                        <label><input type="radio" name="notifyTarget" value="specific"> Specific users</label>
+                    </div>
+                    <div class="dev-row dev-row-stack" id="notifyUserListRow" style="display:none;">
+                        Select users
+                        <div id="notifyUserCheckboxes" class="genre-checkboxes"></div>
+                    </div>
+                    <button type="submit" class="dev-btn">Send</button>
+                    <p id="sendNotificationMessage" class="lists-empty" style="display:none;"></p>
                 </form>
             </div>
 

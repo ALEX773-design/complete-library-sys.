@@ -158,6 +158,72 @@ function wireAddBookForm() {
     });
 }
 
+async function renderNotifyUserCheckboxes() {
+    const container = document.getElementById("notifyUserCheckboxes");
+    if (!container || container.dataset.loaded) return;
+    try {
+        const profiles = await (await fetch("/api/admin/profiles")).json();
+        container.innerHTML = profiles.map((p) => `
+            <label class="genre-checkbox-label">
+                <input type="checkbox" value="${p.username}" class="notify-user-checkbox">
+                ${p.username}
+            </label>
+        `).join("");
+        container.dataset.loaded = "true";
+    } catch (error) {
+        container.innerHTML = `<p class="lists-empty">Couldn't load users.</p>`;
+    }
+}
+
+function wireNotifyForm() {
+    const form = document.getElementById("sendNotificationForm");
+    if (!form) return;
+    const userListRow = document.getElementById("notifyUserListRow");
+    const messageEl = document.getElementById("sendNotificationMessage");
+
+    form.querySelectorAll('input[name="notifyTarget"]').forEach((radio) => {
+        radio.addEventListener("change", () => {
+            const isSpecific = form.querySelector('input[name="notifyTarget"]:checked').value === "specific";
+            userListRow.style.display = isSpecific ? "block" : "none";
+            if (isSpecific) renderNotifyUserCheckboxes();
+        });
+    });
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = document.getElementById("notificationMessageInput").value.trim();
+        const target = form.querySelector('input[name="notifyTarget"]:checked').value;
+        const usernames = target === "specific"
+            ? Array.from(document.querySelectorAll(".notify-user-checkbox:checked")).map((cb) => cb.value)
+            : [];
+
+        messageEl.style.display = "none";
+
+        try {
+            const response = await fetch("/api/admin/notifications", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message, usernames }),
+            });
+            const data = await response.json();
+            messageEl.style.display = "block";
+            if (response.ok) {
+                messageEl.textContent = `Sent to ${data.recipients} user(s).`;
+                messageEl.style.color = "";
+                form.reset();
+                userListRow.style.display = "none";
+            } else {
+                messageEl.textContent = data.error || "Couldn't send notification.";
+                messageEl.style.color = "#e08080";
+            }
+        } catch (error) {
+            messageEl.style.display = "block";
+            messageEl.textContent = "Couldn't reach the server.";
+            messageEl.style.color = "#e08080";
+        }
+    });
+}
+
 async function init() {
     let me;
     try { me = await (await fetch("/api/me")).json(); } catch (error) { me = { logged_in: false }; }
@@ -185,6 +251,7 @@ async function init() {
     wireDevPanel();
     renderGenreCheckboxes();
     wireAddBookForm();
+    wireNotifyForm();
 }
 
 const tabs = document.querySelectorAll(".admin-tab");

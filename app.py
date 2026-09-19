@@ -117,6 +117,21 @@ def init_db():
         )
     """)
     conn.execute("""
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            message TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS notification_recipients (
+            notification_id INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            read_at TEXT,
+            PRIMARY KEY (notification_id, user_id)
+        )
+    """)
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS site_settings (
             id INTEGER PRIMARY KEY CHECK (id = 1),
             maintenance_mode INTEGER NOT NULL DEFAULT 0,
@@ -315,6 +330,85 @@ def add_book():
     conn.close()
 
     return jsonify({"message": "Book added", "id": new_id}), 201
+
+
+# ---------- Notifications ----------
+
+@app.route("/api/notifications")
+def get_notifications():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    conn = get_db()
+    rows = conn.execute("""
+        SELECT n.id, n.message, n.created_at, nr.read_at
+        FROM notification_recipients nr
+        JOIN notifications n ON n.id = nr.notification_id
+        WHERE nr.user_id = ?
+        ORDER BY n.created_at DESC
+    """, (session["user_id"],)).fetchall()
+    conn.close()
+    return jsonify([
+        {"id": row["id"], "message": row["message"], "created_at": row["created_at"], "read": row["read_at"] is not None}
+        for row in rows
+    ]), 200
+
+
+@app.route("/api/notifications/read-all", methods=["POST"])
+def mark_all_notifications_read():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+    conn = get_db()
+    conn.execute(
+        "UPDATE notification_recipients SET read_at = ? WHERE user_id = ? AND read_at IS NULL",
+        (datetime.datetime.utcnow().isoformat(), session["user_id"]),
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"message": "Marked as read"}), 200
+
+
+@app.route("/api/admin/notifications", methods=["POST"])
+def send_notification():
+    if not require_admin():
+        return jsonify({"error": "Admin access required"}), 403
+
+    data = request.get_json(silent=True) or {}
+    message = (data.get("message") or "").strip()[:500]
+    usernames = data.get("usernames") or []
+
+    if not message:
+        return jsonify({"error": "Message is required"}), 400
+
+    conn = get_db()
+
+    if usernames:
+        placeholders = ",".join("?" for _ in usernames)
+        recipient_rows = conn.execute(
+            f"SELECT id FROM users WHERE username IN ({placeholders})", usernames
+        ).fetchall()
+    else:
+        recipient_rows = conn.execute("SELECT id FROM users").fetchall()
+
+    if not recipient_rows:
+        conn.close()
+        return jsonify({"error": "No matching users to notify"}), 400
+
+    now = datetime.datetime.utcnow().isoformat()
+    cursor = conn.execute(
+        "INSERT INTO notifications (message, created_at) VALUES (?, ?)", (message, now)
+    )
+    notification_id = cursor.lastrowid
+
+    for row in recipient_rows:
+        conn.execute(
+            "INSERT INTO notification_recipients (notification_id, user_id) VALUES (?, ?)",
+            (notification_id, row["id"]),
+        )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Notification sent", "recipients": len(recipient_rows)}), 201
 
 
 # ---------- Auth ----------

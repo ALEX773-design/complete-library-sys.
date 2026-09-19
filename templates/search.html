@@ -12,34 +12,7 @@
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="menu-box" id="menuBox">
-            <button class="menu-button" id="menuButton">☰</button>
-            <div class="menu-content">
-                <a href="search.html">Search</a>
-                <a href="browse.html">Browse All</a>
-                <a href="lists.html">Lists</a>
-                <a href="account.html">Account</a>
-            </div>
-        </div>
-
-        <a href="homepage.html" class="logo">
-            National Library
-            <img class="logo-decoration" src="{{ url_for('static', filename='images/logo-decoration.png') }}" alt="">
-        </a>
-
-        <div class="account-box" id="accountBox">
-            <button class="account-button" id="accountButton">◉</button>
-            <div class="account-content">
-                <a href="profile.html">Profile</a>
-                <a href="borrowed-books.html">Borrowed Books</a>
-                <a href="borrowing-history.html">Borrowing History</a>
-                <a href="reading-history.html">Reading History</a>
-                <a href="favorites.html">Favorites</a>
-                <a href="ecard.html">Library E-card</a>
-            </div>
-        </div>
-    </header>
+    {% include "header.html" %}
 
     <main>
         <section class="search">
