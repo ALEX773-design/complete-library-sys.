@@ -1,45 +1,39 @@
 # National Library
 
-A multi-page library web app — browse, search, and borrow books, track reading history and favorites, and manage your account. Built with Flask + SQLite on the backend and vanilla JS/CSS on the frontend.
+A library web app I built to actually learn how a real backend works, not just static pages. You can sign up, browse and search for books, borrow them with due dates, keep a favorites list, and there's a full admin side for managing the whole thing.
 
-## Features
+Started small and kept growing — ended up with an admin panel, a notification system, and a bunch of stuff I didn't originally plan for.
 
-- Account system: signup/login/logout, sessions, hashed passwords
-- Borrowing system with due dates, return tracking, and history
-- Favorites and per-user reading history
-- Editable profile: bio, email, password, profile picture
-- Admin panel: active-user tracking, full user directory with detail view, book management, site-wide notifications (broadcast or targeted), maintenance mode, custom CSS injection, data export, account deletion
+## What it does
+
+- Sign up / log in, sessions, hashed passwords
+- Borrow books, see what's due, return them, check your history
+- Favorites, plus it remembers what you've recently looked at
+- Edit your profile — bio, email, password, profile picture
+- Admin side: see who's currently active, manage every account, add new books, send notifications (broadcast or to specific people), flip on maintenance mode, inject custom CSS, export all the data, wipe non-admin accounts
 - Night mode
-- The first account ever created automatically becomes an admin — no separate setup step
 
-## Tech stack
+The first account anyone creates automatically becomes the admin — didn't bother building a separate setup flow for that.
 
-- **Backend:** Flask, SQLite (via Python's `sqlite3` module)
-- **Frontend:** vanilla HTML/CSS/JS, no frontend framework
+## Built with
 
-## Database schema
+Flask + SQLite on the backend, plain HTML/CSS/JS on the frontend. No React or frontend framework — wanted to actually get the fundamentals down first.
 
-- `users` — id, username, password_hash, email, bio, profile_picture, created_at, last_seen, is_admin
-- `books` + `book_genres` — books table plus a many-to-many genres table
-- `favorites` — (user_id, book_id)
-- `loans` — id, user_id, book_id, borrowed_at, due_at, returned_at
-- `reading_history` — (user_id, book_id, viewed_at), last-viewed semantics
-- `site_settings` — single row of sitewide admin-configurable settings
-- `notifications` + `notification_recipients` — sitewide or targeted user notifications
+## Database
 
-Migrations are hand-rolled: `init_db()` checks `PRAGMA table_info()` before adding columns with `ALTER TABLE`, so it's safe to run against an existing database.
+Seven tables: `users`, `books` (+ a separate `book_genres` table since one book can have multiple genres), `favorites`, `loans`, `reading_history`, `site_settings` (a single row holding admin-configurable stuff like maintenance mode), and `notifications` + `notification_recipients`.
 
-## Setup
+Migrations are hand-rolled — `init_db()` checks what columns already exist before adding new ones, so it's safe to run against a database that already has real data. Not using a tool like Alembic here; it's a solo project, not a team codebase.
+
+## Running it
 
 ```bash
 pip install -r requirements.txt
 python app.py
 ```
 
-The app runs at `http://localhost:5000`. The database (`library.db`) is created automatically on first run, seeded from `static/books.json`.
+Goes to `localhost:5000`. First run creates the database and seeds some starter books automatically.
 
-Sign up with any account first — it becomes the admin account automatically.
+## Note
 
-## Environment variables
-
-- `SECRET_KEY` — Flask session secret. Falls back to a dev default if unset; set a real value before deploying anywhere public.
+Set your own `SECRET_KEY` environment variable before putting this anywhere public — there's a dev fallback in the code, but don't actually use it live.
