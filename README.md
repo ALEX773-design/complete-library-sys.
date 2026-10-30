@@ -2,7 +2,9 @@
 
 A library web application was developed by me to learn the intricacies of backend technology rather than creating static web pages. The application allows signing up, viewing or searching books, issuing the borrowed ones by specifying the due date, and maintaining a list of favorite books. The application also has full-fledged admin features for managing the app.
 
-I started off small but ended up developing an entire dashboard, notification feature, and many things that I did not expect.
+I started off small and my initial design had the structure all over the place but ended up developing an entire dashboard, notification feature, and many things that I did not expect. (unfortunately the structure is still very much lacking)
+
+# Live demo https://alex7794.pythonanywhere.com/
 
 ## What it does
 
